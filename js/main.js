@@ -1282,6 +1282,230 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         initializeManualDownloads();
     }, 1500);
+
+    // ===== SISTEMA DE CARRINHO DE COMPRAS =====
+    console.log("=== INICIANDO SISTEMA DE CARRINHO ===");
+    
+    // Estado global do carrinho
+    let cart = {
+        items: [],
+        total: 0,
+        shipping: 0,
+        tax: 0
+    };
+    
+    // Configurações de preços
+    const productPrices = {
+        "BRIMNES": {
+            "140x200": 199,
+            "160x200": 229
+        },
+        "LURÖY": {
+            "140x200": 40,
+            "160x200": 50
+        },
+        "KLEPPSTAD": {
+            "default": 149
+        }
+    };
+    
+    // Função para adicionar produto ao carrinho
+    function addToCart(productName, size = null, quantity = 1) {
+        let price = 0;
+        
+        if (productName === "BRIMNES") {
+            const currentSize = document.querySelector('.size-option.active')?.dataset.size || "140x200";
+            price = productPrices[productName][currentSize];
+        } else if (productName === "LURÖY") {
+            const currentSize = document.querySelector('.size-option.active')?.dataset.size || "140x200";
+            price = productPrices[productName][currentSize];
+        } else if (productName === "KLEPPSTAD") {
+            price = productPrices[productName].default;
+        }
+        
+        // Verificar se o produto já está no carrinho
+        const existingItem = cart.items.find(item => 
+            item.name === productName && item.size === size
+        );
+        
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.items.push({
+                name: productName,
+                size: size,
+                price: price,
+                quantity: quantity,
+                image: getProductImage(productName)
+            });
+        }
+        
+        updateCartTotal();
+        updateCartDisplay();
+        showCartNotification(productName, quantity);
+        
+        console.log("Produto adicionado ao carrinho:", productName, "Quantidade:", quantity, "Preço:", price);
+    }
+    
+    // Função para obter imagem do produto
+    function getProductImage(productName) {
+        const imageMap = {
+            "BRIMNES": "images/brimnes-estrutura-cama-c-arrumacao-branco__1151024_pe884762_s5.jpg",
+            "LURÖY": "images/luroey-estrado-de-ripas__1089731_pe861685_s5.jpg",
+            "KLEPPSTAD": "images/luroey-estrado-de-ripas__1089731_pe861685_s5.jpg" // Usar imagem existente como fallback
+        };
+        return imageMap[productName] || "";
+    }
+    
+    // Função para atualizar total do carrinho
+    function updateCartTotal() {
+        cart.total = cart.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        cart.shipping = cart.total > 0 ? 9.99 : 0;
+        cart.tax = cart.total * 0.23; // IVA 23%
+    }
+    
+    // Função para atualizar display do carrinho
+    function updateCartDisplay() {
+        const cartCount = document.getElementById('cart-count');
+        const cartTotal = document.getElementById('cart-total');
+        
+        if (cartCount) {
+            const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            cartCount.classList.toggle('hidden', totalItems === 0);
+        }
+        
+        if (cartTotal) {
+            cartTotal.textContent = `${cart.total.toFixed(2)}€`;
+        }
+    }
+    
+    // Função para mostrar notificação de produto adicionado
+    function showCartNotification(productName, quantity) {
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+        notification.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">✅</span>
+                <div>
+                    <p class="font-medium">${productName} adicionado ao carrinho!</p>
+                    <p class="text-sm opacity-90">Quantidade: ${quantity}</p>
+                </div>
+                <button class="ml-4 text-white hover:text-gray-200" onclick="this.parentElement.parentElement.remove()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animar entrada
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto-remover após 3 segundos
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 300);
+        }, 3000);
+    }
+    
+    // Função para abrir página de checkout
+    function openCheckout() {
+        if (cart.items.length === 0) {
+            alert('O carrinho está vazio!');
+            return;
+        }
+        
+        // Salvar carrinho no localStorage
+        localStorage.setItem('ikeaCart', JSON.stringify(cart));
+        
+        // Abrir página de checkout
+        window.open('checkout.html', '_blank');
+    }
+    
+    // Event listeners para botões de adicionar ao carrinho
+    const addToCartBtn = document.getElementById('addToCart');
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', () => {
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const selectedSlats = document.querySelector('input[name="slats"]:checked');
+            
+            // Adicionar estrutura da cama
+            addToCart("BRIMNES", null, quantity);
+            
+            // Adicionar estrado de ripas se selecionado
+            if (selectedSlats && selectedSlats.value === "luroy") {
+                addToCart("LURÖY", null, quantity);
+            }
+        });
+    }
+    
+    // Event listeners para produtos relacionados
+    const relatedProductBtns = document.querySelectorAll('.bg-ikea-blue.text-white.px-4.py-2.rounded-md');
+    relatedProductBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const productCard = btn.closest('.bg-white.rounded-lg');
+            const productName = productCard.querySelector('h3').textContent;
+            addToCart(productName);
+        });
+    });
+    
+    // Adicionar contador de carrinho ao header
+    function addCartCounter() {
+        const header = document.querySelector('header .flex.items-center.justify-between');
+        if (header) {
+            const cartContainer = document.createElement('div');
+            cartContainer.className = 'flex items-center space-x-4';
+            cartContainer.innerHTML = `
+                <button id="cart-button" class="relative p-2 text-gray-600 hover:text-ikea-blue transition-colors duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m6 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+                    </svg>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                </button>
+                <button id="checkout-btn" class="bg-ikea-blue text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                    Finalizar Compra
+                </button>
+            `;
+            
+            header.appendChild(cartContainer);
+            
+            // Event listeners para os botões do carrinho
+            const cartButton = document.getElementById('cart-button');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            
+            if (cartButton) {
+                cartButton.addEventListener('click', () => {
+                    if (cart.items.length > 0) {
+                        openCheckout();
+                    } else {
+                        alert('O carrinho está vazio!');
+                    }
+                });
+            }
+            
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', openCheckout);
+            }
+        }
+    }
+    
+    // Inicializar contador do carrinho
+    setTimeout(() => {
+        addCartCounter();
+        updateCartDisplay();
+    }, 1000);
+    
+    console.log("=== SISTEMA DE CARRINHO INICIALIZADO ===");
 });
 
 
