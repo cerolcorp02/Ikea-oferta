@@ -7,6 +7,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const luroySlatsPrice = document.getElementById("luroy-price");
     const luroySlatsSize = document.getElementById("slats-size");
 
+    // Elementos de detalhes técnicos (medidas)
+    const dimensionText = document.getElementById("dimension-text");
+    const bedLength = document.getElementById("bed-length");
+    const bedWidth = document.getElementById("bed-width");
+    const bedHeight = document.getElementById("bed-height");
+    const mattressLength = document.getElementById("mattress-length");
+    const mattressWidth = document.getElementById("mattress-width");
+    const drawerHeight = document.getElementById("drawer-height");
+    const drawerWidth = document.getElementById("drawer-width");
+    const drawerDepth = document.getElementById("drawer-depth");
+
     const bedPrices = {
         "140x200": "199",
         "160x200": "229"
@@ -16,6 +27,88 @@ document.addEventListener("DOMContentLoaded", () => {
         "140x200": "40",
         "160x200": "50"
     };
+
+    // Imagens de medidas por tamanho (na pasta "imagens/")
+    const measureImagesBySize = {
+        "140x200": "images/medida-140x200.jpg",
+        "160x200": "images/medida-160x200.png"
+    };
+
+    // Atualiza a miniatura 2 (índice 1) e o item correspondente do modal para a imagem de medidas
+    function updateMeasureImage(selectedSize) {
+        const baseSrc = measureImagesBySize[selectedSize];
+        const newSrc = `${baseSrc}?size=${encodeURIComponent(selectedSize)}`; // cache-buster
+        if (!newSrc) return;
+
+        // Atualizar a 2ª miniatura (data-index="1")
+        const measureThumb = document.querySelector('.thumbnail[data-index="1"]');
+        if (measureThumb) {
+            // fallback caso a PNG não exista
+            measureThumb.onerror = () => {
+                console.warn("Imagem de medidas não encontrada:", newSrc, "— voltando à imagem padrão .jpg");
+                const fallback = "images/brimnes-estrutura-cama-c-arrumacao-branco__0800869_ph163683_s5.jpg";
+                measureThumb.src = fallback;
+                measureThumb.dataset.main = fallback;
+                if (window && window.galleryImages && window.galleryImages[1]) {
+                    window.galleryImages[1].src = fallback;
+                    window.galleryImages[1].alt = "Vista das gavetas da BRIMNES";
+                    window.galleryImages[1].description = "Gavetas";
+                }
+            };
+
+            measureThumb.src = newSrc;
+            measureThumb.dataset.main = newSrc;
+            measureThumb.alt = `Medidas ${selectedSize}`;
+        }
+
+        // Se a imagem principal estiver a mostrar a antiga de índice 1 ou uma medida anterior, sincronizar
+        const mainImageEl = document.getElementById("mainImage");
+        if (mainImageEl) {
+            const showingOldSecond =
+                mainImageEl.src.includes("brimnes-estrutura-cama-c-arrumacao-branco__0780630_") ||
+                mainImageEl.src.includes("medida-140x200") ||
+                mainImageEl.src.includes("medida-160x200");
+            if (showingOldSecond) {
+                mainImageEl.src = newSrc;
+            }
+        }
+
+        // Atualizar array usado no modal, quando já estiver disponível
+        if (window && window.galleryImages && window.galleryImages[1]) {
+            window.galleryImages[1].src = newSrc;
+            window.galleryImages[1].alt = `Medidas ${selectedSize}`;
+            window.galleryImages[1].description = "Medidas";
+        }
+    }
+
+    // Tabela com dados técnicos por tamanho
+    const technicalDetailsBySize = {
+        "160x200": {
+            bed: { length: "206 cm", width: "166 cm", height: "47 cm" },
+            mattress: { length: "200 cm", width: "160 cm" },
+            drawer: { height: "20 cm", width: "94 cm", depth: "54 cm" }
+        },
+        "140x200": {
+            bed: { length: "206 cm", width: "146 cm", height: "47 cm" },
+            mattress: { length: "200 cm", width: "140 cm" },
+            drawer: { height: "20 cm", width: "94 cm", depth: "54 cm" }
+        }
+    };
+
+    function updateTechnicalDetails(selectedSize) {
+        const data = technicalDetailsBySize[selectedSize];
+        if (!data) return;
+
+        if (dimensionText) dimensionText.textContent = `${selectedSize} cm`;
+        if (bedLength) bedLength.textContent = data.bed.length;
+        if (bedWidth) bedWidth.textContent = data.bed.width;
+        if (bedHeight) bedHeight.textContent = data.bed.height;
+        if (mattressLength) mattressLength.textContent = data.mattress.length;
+        if (mattressWidth) mattressWidth.textContent = data.mattress.width;
+        if (drawerHeight) drawerHeight.textContent = data.drawer.height;
+        if (drawerWidth) drawerWidth.textContent = data.drawer.width;
+        if (drawerDepth) drawerDepth.textContent = data.drawer.depth;
+    }
 
     function updatePrices(selectedSize) {
         if (priceMain) {
@@ -38,6 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
         sizeOptions.forEach(button => {
             const priceElement = button.querySelector('.text-xs');
             if (button.dataset.size === selectedSize) {
+                button.classList.add("active");
                 button.classList.remove("border", "border-gray-300", "text-gray-700", "hover:bg-gray-50");
                 button.classList.add("bg-ikea-blue", "text-white", "hover:bg-blue-700", "shadow-md");
                 if (priceElement) {
@@ -45,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     priceElement.classList.add("opacity-90");
                 }
             } else {
+                button.classList.remove("active");
                 button.classList.remove("bg-ikea-blue", "text-white", "hover:bg-blue-700", "shadow-md");
                 button.classList.add("border", "border-gray-300", "text-gray-700", "hover:bg-gray-50");
                 if (priceElement) {
@@ -61,6 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
             
             updateSizeButtons(selectedSize);
             updatePrices(selectedSize);
+            updateTechnicalDetails(selectedSize);
+            updateMeasureImage(selectedSize);
             
             // Mostrar mensagem de confirmação
             if (sizeChangeMessage) {
@@ -76,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const initialSize = "140x200";
     updateSizeButtons(initialSize);
     updatePrices(initialSize);
+    updateTechnicalDetails(initialSize);
 
     // Image gallery functionality - SOLUÇÃO DEFINITIVA
     console.log("=== INICIANDO GALERIA - SOLUÇÃO DEFINITIVA ===");
@@ -459,7 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalImageContainer = document.getElementById("modal-image-container");
 
     // Array de imagens para o modal
-    const galleryImages = [
+    window.galleryImages = [
         {
             src: "./images/brimnes-estrutura-cama-c-arrumacao-branco__1151024_pe884762_s5.jpg",
             alt: "Vista principal da BRIMNES",
@@ -491,6 +589,14 @@ document.addEventListener("DOMContentLoaded", () => {
             description: "Vista montada"
         }
     ];
+    const galleryImages = window.galleryImages;
+
+    // Sincronizar a imagem de medidas no modal com o tamanho atual
+    (function syncMeasureImageToModal() {
+        const currentSizeBtn = document.querySelector('.size-option.active');
+        const selectedSize = currentSizeBtn?.dataset.size || '140x200';
+        updateMeasureImage(selectedSize);
+    })();
 
     // Criar indicadores
     function createIndicators() {

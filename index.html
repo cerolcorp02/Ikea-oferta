@@ -208,13 +208,13 @@
                             </div>
                             
                             <div class="thumbnail-container relative group cursor-pointer transition-all duration-300 hover:scale-105">
-                                <img src="images/brimnes-estrutura-cama-c-arrumacao-branco__0780630_pe760137_s5.jpg" 
-                                     alt="Vista lateral" 
+                                <img src="images/medida-140x200.jpg" 
+                                     alt="Medidas 140x200" 
                                      class="w-full h-24 sm:h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-ikea-blue shadow-sm transition-all duration-300 hover:shadow-lg thumbnail"
-                                     data-main="images/brimnes-estrutura-cama-c-arrumacao-branco__0780630_pe760137_s5.jpg"
+                                     data-main="images/medida-140x200.jpg"
                                      data-index="1">
                                 <div class="absolute top-2 right-2 bg-ikea-blue text-white text-xs px-2 py-1 rounded-full font-medium">2</div>
-                                <div class="absolute bottom-2 left-2 bg-white bg-opacity-90 text-gray-800 text-xs px-2 py-1 rounded font-medium">Lateral</div>
+                                <div class="absolute bottom-2 left-2 bg-white bg-opacity-90 text-gray-800 text-xs px-2 py-1 rounded font-medium">Medidas</div>
                             </div>
                             
                             <div class="thumbnail-container relative group cursor-pointer transition-all duration-300 hover:scale-105">
@@ -296,14 +296,14 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-3">Escolha dimensões</label>
                             <div class="flex space-x-3">
-                                <button class="size-option active bg-ikea-blue text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-blue-700 shadow-md" 
+                                <button id="btn-size-140x200" class="size-option active bg-ikea-blue text-white px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-blue-700 shadow-md" 
                                         data-size="140x200">
                                     <div class="text-center">
                                         <div class="font-semibold">140x200 cm</div>
                                         <div class="text-xs opacity-90">199€</div>
                                     </div>
                                 </button>
-                                <button class="size-option border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-50 transition-all duration-200" 
+                                <button id="btn-size-160x200" class="size-option border border-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm hover:bg-gray-50 transition-all duration-200" 
                                         data-size="160x200">
                                     <div class="text-center">
                                         <div class="font-semibold">160x200 cm</div>
@@ -529,9 +529,9 @@
                                     <span class="text-ikea-blue mr-3 mt-1">✓</span>
                                     <span>Fácil montagem com instruções incluídas</span>
                                 </li>
-                                <li class="flex items-start">
+                                <li class="flex items-start" id="dimensao">
                                     <span class="text-ikea-blue mr-3 mt-1">✓</span>
-                                    <span>Dimensões: 140x200 cm</span>
+                                    <span>Dimensões: <span id="dimension-text">140x200 cm</span></span>
                                 </li>
                             </ul>
                         </div>
@@ -553,25 +553,25 @@
                             </div>
                         </div>
                         
-                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <div class="bg-white p-6 rounded-lg shadow-sm" id="detalhes">
                             <h4 class="font-semibold text-gray-900 mb-3">Detalhes técnicos</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <h5 class="font-medium text-gray-800 mb-3">Medidas da cama</h5>
                                     <ul class="space-y-2 text-sm text-gray-600">
-                                        <li><span class="font-medium">Comprimento:</span> 206 cm</li>
-                                        <li><span class="font-medium">Largura:</span> 146 cm</li>
-                                        <li><span class="font-medium">Altura:</span> 47 cm</li>
-                                        <li><span class="font-medium">Comprimento do colchão:</span> 200 cm</li>
-                                        <li><span class="font-medium">Largura do colchão:</span> 140 cm</li>
+                                        <li><span class="font-medium">Comprimento:</span> <span id="bed-length">206 cm</span></li>
+                                        <li><span class="font-medium">Largura:</span> <span id="bed-width">146 cm</span></li>
+                                        <li><span class="font-medium">Altura:</span> <span id="bed-height">47 cm</span></li>
+                                        <li><span class="font-medium">Comprimento do colchão:</span> <span id="mattress-length">200 cm</span></li>
+                                        <li><span class="font-medium">Largura do colchão:</span> <span id="mattress-width">140 cm</span></li>
                                     </ul>
                                 </div>
                                 <div>
                                     <h5 class="font-medium text-gray-800 mb-3">Medidas das gavetas</h5>
                                     <ul class="space-y-2 text-sm text-gray-600">
-                                        <li><span class="font-medium">Altura (interior):</span> 20 cm</li>
-                                        <li><span class="font-medium">Largura (interior):</span> 94 cm</li>
-                                        <li><span class="font-medium">Profundidade (interior):</span> 54 cm</li>
+                                        <li><span class="font-medium">Altura (interior):</span> <span id="drawer-height">20 cm</span></li>
+                                        <li><span class="font-medium">Largura (interior):</span> <span id="drawer-width">94 cm</span></li>
+                                        <li><span class="font-medium">Profundidade (interior):</span> <span id="drawer-depth">54 cm</span></li>
                                     </ul>
                                 </div>
                             </div>
