@@ -1612,6 +1612,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
     
     console.log("=== SISTEMA DE CARRINHO INICIALIZADO ===");
+    
+    // Funcionalidade para clicar no logo IKEA e voltar ao topo
+    const ikeaLogo = document.getElementById('ikea-logo');
+    if (ikeaLogo) {
+        ikeaLogo.addEventListener('click', () => {
+            // Scroll suave para o topo da página
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            // Adicionar efeito visual de feedback
+            ikeaLogo.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                ikeaLogo.style.transform = 'scale(1)';
+            }, 150);
+        });
+    }
+    
+    console.log("=== FUNCIONALIDADE DE SCROLL AO TOPO INICIALIZADA ===");
 });
 
 
