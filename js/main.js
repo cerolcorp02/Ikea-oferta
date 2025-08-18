@@ -29,6 +29,12 @@ document.addEventListener("DOMContentLoaded", () => {
         "160x200": 114.98
     };
 
+    // Preços do financiamento por dimensão (2x sem custos)
+    const financingPrices = {
+        "140x200": 59.98,
+        "160x200": 69.98
+    };
+
     const slatPrices = {
         "140x200": "40",
         "160x200": "50"
@@ -133,7 +139,28 @@ document.addEventListener("DOMContentLoaded", () => {
             luroySlatsSize.textContent = selectedSize + " cm";
         }
         
+        // Atualizar preço do financiamento
+        updateFinancingPrice(selectedSize);
+        
         // Não atualizar quantidade aqui para evitar conflitos
+    }
+
+    // Função para atualizar o preço do financiamento
+    function updateFinancingPrice(selectedSize) {
+        const financingPriceElement = document.getElementById('financing-price');
+        const financingWhatsappElement = document.getElementById('financing-whatsapp');
+        
+        if (financingPriceElement && financingWhatsappElement) {
+            const financingPrice = financingPrices[selectedSize];
+            const formatEuro = (value) => value.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            // Atualizar o texto do preço
+            financingPriceElement.textContent = `${formatEuro(financingPrice)} €/mês – 2x sem custos`;
+            
+            // Atualizar o link do WhatsApp com a nova mensagem
+            const newMessage = `Olá! Gostaria de saber mais sobre o financiamento de ${formatEuro(financingPrice)} €/mês – 2x sem custos para a estrutura de cama BRIMNES.`;
+            financingWhatsappElement.href = `https://wa.me/351926218100?text=${encodeURIComponent(newMessage)}`;
+        }
     }
 
     function updateSizeButtons(selectedSize) {
