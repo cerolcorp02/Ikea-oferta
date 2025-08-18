@@ -5,8 +5,8 @@
 ### Seleção de Dimensões
 A página agora permite escolher entre duas dimensões diferentes para a estrutura de cama BRIMNES:
 
-- **140x200 cm** - Preço: 199€
-- **160x200 cm** - Preço: 229€
+- **140x200 cm** - Preço: ~~199€~~, agora por 99,98€
+- **160x200 cm** - Preço: ~~229€~~, agora por 114,98€
 
 ### Como Funciona
 1. **Botões de Dimensões**: Clique nos botões para selecionar a dimensão desejada

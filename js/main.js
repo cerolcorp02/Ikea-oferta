@@ -18,9 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const drawerWidth = document.getElementById("drawer-width");
     const drawerDepth = document.getElementById("drawer-depth");
 
-    const bedPrices = {
-        "140x200": "199",
-        "160x200": "229"
+    // Preços originais e de oferta por tamanho
+    const bedOriginalPrices = {
+        "140x200": 199,
+        "160x200": 229
+    };
+
+    const bedOfferPrices = {
+        "140x200": 99.98,
+        "160x200": 114.98
     };
 
     const slatPrices = {
@@ -112,7 +118,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updatePrices(selectedSize) {
         if (priceMain) {
-            priceMain.textContent = bedPrices[selectedSize];
+            const formatEuro = (value) => value.toLocaleString('pt-PT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '€';
+            const original = bedOriginalPrices[selectedSize];
+            const offer = bedOfferPrices[selectedSize];
+            priceMain.innerHTML = `<del class="text-gray-400">${formatEuro(original)}</del> <span class="text-red-600">${formatEuro(offer)}</span>`;
         }
         
         if (sizeHighlight) {
@@ -1403,8 +1412,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Configurações de preços
     const productPrices = {
         "BRIMNES": {
-            "140x200": 199,
-            "160x200": 229
+            "140x200": 99.98,
+            "160x200": 114.98
         },
         "LURÖY": {
             "140x200": 40,
@@ -1452,6 +1461,20 @@ document.addEventListener("DOMContentLoaded", () => {
         
         console.log("Produto adicionado ao carrinho:", productName, "Quantidade:", quantity, "Preço:", price);
     }
+
+    // Ao carregar, caso exista carrinho salvo, normalizar preços para a oferta atual
+    try {
+        const savedCart = JSON.parse(localStorage.getItem('ikeaCart'));
+        if (savedCart && Array.isArray(savedCart.items)) {
+            savedCart.items.forEach(item => {
+                if (item.name === 'BRIMNES') {
+                    const size = document.querySelector('.size-option.active')?.dataset.size || '140x200';
+                    item.price = productPrices['BRIMNES'][size];
+                }
+            });
+            localStorage.setItem('ikeaCart', JSON.stringify(savedCart));
+        }
+    } catch (e) {}
     
     // Função para obter imagem do produto
     function getProductImage(productName) {
